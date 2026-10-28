@@ -58,4 +58,46 @@ public class BookService {
     }
 
 
+    // 4. Update an existing book
+    @Transactional
+    public BookResponse updateBook(Long id, BookRequest request) {
+
+        // Find the existing book
+        Book book = bookRepository.findById(id).orElse(null);
+
+        if (book == null) {
+            return null;
+        }
+
+        // Check whether another book uses this ISBN
+        if (bookRepository.existsByIsbnAndIdNot(request.isbn(), id)) {
+            return null;
+        }
+
+        book.setTitle(request.title().trim());
+        book.setAuthor(request.author().trim());
+        book.setIsbn(request.isbn());
+        book.setTotalCopies(request.totalCopies());
+
+        Book updatedBook = bookRepository.save(book);
+
+        return BookResponse.from(updatedBook);
+    }
+
+    // 5. Delete an existing book
+    @Transactional
+    public boolean deleteBook(Long id) {
+
+        Book book = bookRepository.findById(id)
+                .orElse(null);
+
+        if (book == null) {
+            return false;
+        }
+
+        bookRepository.delete(book);
+
+        return true;
+    }
+
 }

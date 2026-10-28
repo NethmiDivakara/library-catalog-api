@@ -33,4 +33,28 @@ public class BookController {
         return bookService.getBookById(id);
     }
 
+    // POST /api/v1/books
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookResponse createBook(
+            @Valid @RequestBody BookRequest request) {
+        return bookService.createBook(request);
+    }
+
+
+    //    // PUT /api/v1/books/{id}
+    @PutMapping("/{id}")
+    public BookResponse updateBook(
+            @PathVariable Long id,
+            @Valid @RequestBody BookRequest request) {
+        return bookService.updateBook(id, request);
+    }
+
+    // DELETE /api/v1/books/{id}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+    }
+
 }
