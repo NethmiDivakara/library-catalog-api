@@ -1,6 +1,7 @@
 package com.training.library_catalog_api.book.service;
 
 import com.training.library_catalog_api.book.dto.BookRequest;
+import com.training.library_catalog_api.book.dto.BookRequestWithBody;
 import com.training.library_catalog_api.book.dto.BookResponse;
 import com.training.library_catalog_api.book.entity.Book;
 import com.training.library_catalog_api.book.repository.BookRepository;
@@ -82,6 +83,27 @@ public class BookServiceImplementation implements BookService {
     }
 
     @Override
+    @Transactional
+    public BookResponse updateBookWithBody(BookRequestWithBody requestBody) {
+
+        Book book = bookRepository.findById(requestBody.id())
+                .orElseThrow(() -> new CustomException(
+                        "Book not found with ID: " + requestBody.id(),
+                        HttpStatus.NOT_FOUND
+
+                ));
+
+        book.setTitle(requestBody.title().trim());
+        book.setAuthor(requestBody.author().trim());
+        book.setIsbn(requestBody.isbn());
+        book.setTotalCopies(requestBody.totalCopies());
+
+        Book updatedBook = bookRepository.save(book);
+
+        return BookResponse.from(updatedBook);
+    }
+
+    @Override
     public void deleteBook(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new CustomException(
@@ -90,5 +112,11 @@ public class BookServiceImplementation implements BookService {
                 ));
         bookRepository.delete(book);
 
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllBooks(){
+        bookRepository.deleteAll();
     }
 }

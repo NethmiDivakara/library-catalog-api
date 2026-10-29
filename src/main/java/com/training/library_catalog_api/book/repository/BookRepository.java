@@ -7,9 +7,6 @@ public interface BookRepository extends JpaRepository<Book, Long> { //Book->enti
 
     boolean existsByIsbn(String isbn);
 
-    boolean existsByIsbnAndIdNot(String isbn, Long id);
-
-
 }
 
 //repository is used to store and retrieve data from a database.

@@ -1,8 +1,9 @@
 package com.training.library_catalog_api.book.controller;
 
 import com.training.library_catalog_api.book.dto.BookRequest;
+import com.training.library_catalog_api.book.dto.BookRequestWithBody;
 import com.training.library_catalog_api.book.dto.BookResponse;
-import com.training.library_catalog_api.book.service.BookServiceImplementation;
+import com.training.library_catalog_api.book.service.BookService;
 
 import jakarta.validation.Valid;
 
@@ -15,22 +16,24 @@ import java.util.List;
 @RequestMapping("/api/v1/books")
 public class BookController {
 
-    private final BookServiceImplementation bookServiceImplementation;
+    private final BookService bookService;
 
-    public BookController(BookServiceImplementation bookServiceImplementation) {
-        this.bookServiceImplementation = bookServiceImplementation;
-    } //if we have lombok library then we don't need this constructor, @RequiredArgsConstructor
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
+    //if we have lombok library then we don't need this constructor, @RequiredArgsConstructor
 
     // GET /api/v1/books
     @GetMapping
     public List<BookResponse> getAllBooks() {
-        return bookServiceImplementation.getAllBooks();
+        return bookService.getAllBooks();
     }
 
     // GET /api/v1/books/{id}
     @GetMapping("/{id}")
     public BookResponse getBookById(@PathVariable Long id) {
-        return bookServiceImplementation.getBookById(id);
+        return bookService.getBookById(id);
     }
 
     // POST /api/v1/books
@@ -38,23 +41,39 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse createBook(
             @Valid @RequestBody BookRequest request) {
-        return bookServiceImplementation.createBook(request);
+        return bookService.createBook(request);
     }
 
 
     //    // PUT /api/v1/books/{id}
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public BookResponse updateBook(
             @PathVariable Long id,
             @Valid @RequestBody BookRequest request) {
-        return bookServiceImplementation.updateBook(id, request);
+        return bookService.updateBook(id, request);
     }
+
+    //PUT /api/v1/books
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public BookResponse updateBookWithBody(
+            @Valid @RequestBody BookRequestWithBody requestBody){
+        return bookService.updateBookWithBody(requestBody);
+    }
+
 
     // DELETE /api/v1/books/{id}
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable Long id) {
-        bookServiceImplementation.deleteBook(id);
+        bookService.deleteBook(id);
+    }
+
+    @DeleteMapping()
+    @ResponseStatus (HttpStatus.NO_CONTENT)
+    public void deleteAllBooks(){
+        bookService.deleteAllBooks();
     }
 
 }
