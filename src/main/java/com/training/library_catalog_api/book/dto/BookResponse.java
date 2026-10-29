@@ -10,7 +10,7 @@ public record BookResponse(
         Integer totalCopies
 ) {
 
-    public static BookResponse from(Book book) {
+    public static BookResponse from(Book book) { //converts Book entity into a BookResponse DTO
         return new BookResponse(
                 book.getId(),
                 book.getTitle(),

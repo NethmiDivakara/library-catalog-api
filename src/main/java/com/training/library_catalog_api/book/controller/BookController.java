@@ -1,8 +1,8 @@
-package com.training.library_catalog_api.book.contoller;
+package com.training.library_catalog_api.book.controller;
 
 import com.training.library_catalog_api.book.dto.BookRequest;
 import com.training.library_catalog_api.book.dto.BookResponse;
-import com.training.library_catalog_api.book.service.BookService;
+import com.training.library_catalog_api.book.service.BookServiceImplementation;
 
 import jakarta.validation.Valid;
 
@@ -15,22 +15,22 @@ import java.util.List;
 @RequestMapping("/api/v1/books")
 public class BookController {
 
-    private final BookService bookService;
+    private final BookServiceImplementation bookServiceImplementation;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
+    public BookController(BookServiceImplementation bookServiceImplementation) {
+        this.bookServiceImplementation = bookServiceImplementation;
     } //if we have lombok library then we don't need this constructor, @RequiredArgsConstructor
 
     // GET /api/v1/books
     @GetMapping
     public List<BookResponse> getAllBooks() {
-        return bookService.getAllBooks();
+        return bookServiceImplementation.getAllBooks();
     }
 
     // GET /api/v1/books/{id}
     @GetMapping("/{id}")
     public BookResponse getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+        return bookServiceImplementation.getBookById(id);
     }
 
     // POST /api/v1/books
@@ -38,7 +38,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookResponse createBook(
             @Valid @RequestBody BookRequest request) {
-        return bookService.createBook(request);
+        return bookServiceImplementation.createBook(request);
     }
 
 
@@ -47,14 +47,14 @@ public class BookController {
     public BookResponse updateBook(
             @PathVariable Long id,
             @Valid @RequestBody BookRequest request) {
-        return bookService.updateBook(id, request);
+        return bookServiceImplementation.updateBook(id, request);
     }
 
     // DELETE /api/v1/books/{id}
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);
+        bookServiceImplementation.deleteBook(id);
     }
 
 }

@@ -24,3 +24,6 @@ public record BookRequest(
 
 ) {
 }
+
+
+//dto is for the request validation while entity does the database validation
