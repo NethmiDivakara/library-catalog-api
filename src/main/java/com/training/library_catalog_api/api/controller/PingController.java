@@ -9,10 +9,11 @@ package com.training.library_catalog_api.api.controller;
 //public class PingController {
 //
 //    @GetMapping("/api/v1/ping")
-//    public Map<String,String> ping(){
-//    return Map.of("message" ,"Welcome");
+//    public Map<String,String> ping(){ //we use ping to check health
+//    return Map.of("message" ,"Displaying as json");
 //
 //    }
 //
 //}
 
+//checks the annotations and converts the map into json using httpmessageconverter jackson

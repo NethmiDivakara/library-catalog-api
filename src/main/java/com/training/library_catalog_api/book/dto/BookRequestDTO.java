@@ -1,18 +1,17 @@
 package com.training.library_catalog_api.book.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
-public record BookRequest(
+public record BookRequestDTO(
 
         @NotBlank(message = "Title must not be blank")
         @Size(max = 150, message = "Title cannot exceed 150 characters")
+        @Pattern( regexp = "^[\\p{L}\\p{N}][\\p{L}\\p{N}\\s.,:;!?()'&/-]*$", message = "Title contains invalid characters" )
         String title,
 
         @NotBlank(message = "Author must not be blank")
         @Size(max = 100, message = "Author cannot exceed 100 characters")
+        @Pattern( regexp = "^[\\p{L}][\\p{L}\\s.'-]*$", message = "Author contains invalid characters")
         String author,
 
         @NotBlank(message = "ISBN must not be blank")

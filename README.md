@@ -57,3 +57,33 @@ GET /api/v1/books/{id} Return one book by id  -> 200 OK + book
 PUT /api/v1/books/{id} Fully update the allowed book fields for an existing id  -> 200 OK + updated book
 DELETE /api/v1/books/{id}  Delete the existing book by id  -> 204 No Content
 
+
+Phase 2-User creation
+
+The application supports automatic creation of an initial ADMIN
+account when running with the `local` Spring profile.
+
+Configure the following environment variables:
+
+- ADMIN_EMAIL
+- ADMIN_PASSWORD
+
+The bootstrap checks whether an account with the configured email
+already exists. If it does not, a new ADMIN account is created
+with a BCrypt-hashed password.
+
+The Admin bootstrap is idempotent and does not modify existing accounts.
+
+This feature is restricted to local development.
+
+
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+GET /api/v1/auth/me
+
+
+
+- JWT_SECRET_KEY
+- JWT_ISSUER
+- JWT_EXPIRATION
+

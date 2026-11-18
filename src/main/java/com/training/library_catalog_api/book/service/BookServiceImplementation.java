@@ -1,8 +1,8 @@
 package com.training.library_catalog_api.book.service;
 
-import com.training.library_catalog_api.book.dto.BookRequest;
-import com.training.library_catalog_api.book.dto.BookRequestWithBody;
-import com.training.library_catalog_api.book.dto.BookResponse;
+import com.training.library_catalog_api.book.dto.BookRequestDTO;
+import com.training.library_catalog_api.book.dto.BookRequestWithBodyDTO;
+import com.training.library_catalog_api.book.dto.BookResponseDTO;
 import com.training.library_catalog_api.book.entity.Book;
 import com.training.library_catalog_api.book.repository.BookRepository;
 
@@ -24,29 +24,30 @@ public class BookServiceImplementation implements BookService {
     }
 
     @Override
-    public List<BookResponse> getAllBooks() {
+    public List<BookResponseDTO> getAllBooks() {
         return bookRepository.findAll()
                 .stream()
-                .map(BookResponse::from)//converts every book into a response DTO
+                .map(BookResponseDTO::from)//converts every book into a response DTO
                 .toList();
 
     }
 
     @Override
-    public BookResponse getBookById(Long id) {
+    public BookResponseDTO getBookById(Long id) {
         Book book= bookRepository.findById(id)
                 .orElseThrow(()-> new CustomException (
                         "Book not found",
                         HttpStatus.NOT_FOUND
                 ));
-        return BookResponse.from(book);
+        return BookResponseDTO.from(book);
+
     }
 
     @Override
     @Transactional
-    public BookResponse createBook(BookRequest request) {
-
-        if(bookRepository.existsByIsbn(request.isbn())){
+    public BookResponseDTO createBook(BookRequestDTO request) {
+        String isbn = request.isbn().trim();
+        if (bookRepository.existsByIsbn(isbn)) {
             throw new CustomException(
                     "A book with this ISBN already exists",
                     HttpStatus.CONFLICT
@@ -59,19 +60,27 @@ public class BookServiceImplementation implements BookService {
                 request.totalCopies()
         );
                 Book createdBook = bookRepository.save(book);
-                return BookResponse.from(createdBook);
+                return BookResponseDTO.from(createdBook);
     }
 
     @Override
     @Transactional
-    public BookResponse updateBook(Long id, BookRequest request) {
+    public BookResponseDTO updateBook(Long id, BookRequestDTO request) {
 
         Book book=bookRepository.findById(id)
                 .orElseThrow(() -> new CustomException(
                         "Book not found",
                         HttpStatus.NOT_FOUND
                 ));
+        String isbn = request.isbn().trim();
+        if (bookRepository.existsByIsbn(isbn)
+                && !book.getIsbn().equals(isbn)) {
 
+            throw new CustomException(
+                    "A book with this ISBN already exists",
+                    HttpStatus.CONFLICT //409
+            );
+        }
         book.setTitle(request.title().trim());
         book.setAuthor(request.author().trim());
         book.setIsbn(request.isbn());
@@ -79,19 +88,30 @@ public class BookServiceImplementation implements BookService {
         );
 
         Book updatedBook=bookRepository.save(book);
-        return BookResponse.from(updatedBook);
+        return BookResponseDTO.from(updatedBook);
     }
 
     @Override
     @Transactional
-    public BookResponse updateBookWithBody(BookRequestWithBody requestBody) {
+    public BookResponseDTO updateBookWithBody(BookRequestWithBodyDTO requestBody) {
 
         Book book = bookRepository.findById(requestBody.id())
                 .orElseThrow(() -> new CustomException(
                         "Book not found with ID: " + requestBody.id(),
-                        HttpStatus.NOT_FOUND
+                        HttpStatus.NOT_FOUND //404
 
                 ));
+        String isbn = requestBody.isbn().trim();
+
+
+        if (bookRepository.existsByIsbn(isbn)
+                && !book.getIsbn().equals(isbn)) {
+
+            throw new CustomException(
+                    "A book with this ISBN already exists",
+                    HttpStatus.CONFLICT //409
+            );
+        }
 
         book.setTitle(requestBody.title().trim());
         book.setAuthor(requestBody.author().trim());
@@ -100,7 +120,7 @@ public class BookServiceImplementation implements BookService {
 
         Book updatedBook = bookRepository.save(book);
 
-        return BookResponse.from(updatedBook);
+        return BookResponseDTO.from(updatedBook);
     }
 
     @Override
@@ -108,7 +128,7 @@ public class BookServiceImplementation implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new CustomException(
                         "Book not found with ID: " + id,
-                        HttpStatus.NOT_FOUND
+                        HttpStatus.NOT_FOUND //404
                 ));
         bookRepository.delete(book);
 
